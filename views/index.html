@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tank Fire</title>
+		<link rel='icon' type='image/png' href='/client/img/favicon.png' />
+        <link rel='stylesheet' type='text/css' href='/dist/main.bundle.css' />
+	</head>
+
+    <body oncontextmenu='return false;'>
+
+        <div id = 'name-prompt-overlay' class="container">
+            <div id = 'name-prompt-container' class='container'>
+                <form id = 'name-form'>
+                    <input id='name-input' type='text' class='input' placeholder="Enter your name"/>
+                    <input id='name-submit' type="button" value="Start"/>
+                </form>
+            </div>
+    
+        </div>
+        
+        <div id='container'>
+            <table class='table'>
+                <tr>
+                    <th colspan="3">
+                        <h1>Tank Fire</h1>
+                    </th>
+                </tr>
+                <tr>
+                    <td id="leaderboard-container">
+                        <h3>LeaderBoard</h3>
+                        <ul id='leaderboard'></ul>
+                    </td>
+                    <td id='canvas-container'>
+                        <canvas id='canvas'></canvas>
+                    </td>
+                    <td id='chat-container'>
+                        <ul id='chat-display'>
+                        </ul>
+                        <input id='chat-input' type='text' placeholder="Press Enter to send" name='chat'/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </body>
+    <script src='/dist/client.bundle.js'></script>
+
+</html>
+
