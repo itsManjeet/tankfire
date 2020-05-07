@@ -49,7 +49,6 @@ class Timer(object):
 						pass
 
 class Castle():
-	""" Player's castle/fortress """
 
 	(STATE_STANDING, STATE_DESTROYED, STATE_EXPLODING) = range(3)
 
@@ -68,7 +67,6 @@ class Castle():
 		self.rebuild()
 
 	def draw(self):
-		""" Draw castle """
 		global screen
 
 		screen.blit(self.image, self.rect.topleft)
@@ -94,17 +92,6 @@ class Castle():
 		self.active = False
 
 class Bonus():
-	""" Various power-ups
-	When bonus is spawned, it begins flashing and after some time dissapears
-
-	Available bonusses:
-		grenade	: Picking up the grenade power up instantly wipes out ever enemy presently on the screen, including Armor Tanks regardless of how many times you've hit them. You do not, however, get credit for destroying them during the end-stage bonus points.
-		helmet	: The helmet power up grants you a temporary force field that makes you invulnerable to enemy shots, just like the one you begin every stage with.
-		shovel	: The shovel power up turns the walls around your fortress from brick to stone. This makes it impossible for the enemy to penetrate the wall and destroy your fortress, ending the game prematurely. The effect, however, is only temporary, and will wear off eventually.
-		star		: The star power up grants your tank with new offensive power each time you pick one up, up to three times. The first star allows you to fire your bullets as fast as the power tanks can. The second star allows you to fire up to two bullets on the screen at one time. And the third star allows your bullets to destroy the otherwise unbreakable steel walls. You carry this power with you to each new stage until you lose a life.
-		tank		: The tank power up grants you one extra life. The only other way to get an extra life is to score 20000 points.
-		timer		: The timer power up temporarily freezes time, allowing you to harmlessly approach every tank and destroy them until the time freeze wears off.
-	"""
 
 	# bonus types
 	(BONUS_GRENADE, BONUS_HELMET, BONUS_SHOVEL, BONUS_STAR, BONUS_TANK, BONUS_TIMER) = range(6)
@@ -409,11 +396,6 @@ class Level():
 		gtimer.add(400, lambda :self.toggleWaves())
 
 	def hitTile(self, pos, power = 1, sound = False):
-		"""
-			Hit the tile
-			@param pos Tile's x, y in px
-			@return True if bullet was stopped, False otherwise
-		"""
 
 		global play_sounds, sounds
 
@@ -622,9 +604,7 @@ class Tank():
 		self.timer_uuid_spawn_end = gtimer.add(1000, lambda :self.endSpawning())
 
 	def endSpawning(self):
-		""" End spawning
-		Player becomes operational
-		"""
+
 		self.state = self.STATE_ALIVE
 		gtimer.destroy(self.timer_uuid_spawn_end)
 
@@ -673,10 +653,6 @@ class Tank():
 				self.spawnBonus()
 
 	def fire(self, forced = False):
-		""" Shoot a bullet
-		@param boolean forced. If false, check whether tank has exceeded his bullet quota. Default: True
-		@return boolean True if bullet was fired, false otherwise
-		"""
 
 		global bullets, labels
 
@@ -1258,7 +1234,7 @@ class Game():
 		pygame.init()
 
 
-		pygame.display.set_caption("Battle City")
+		pygame.display.set_caption("TankFire")
 
 		size = width, height = 480, 416
 
@@ -1272,24 +1248,11 @@ class Game():
 		# load sprites (funky version)
 		#sprites = pygame.transform.scale2x(pygame.image.load("images/sprites.gif"))
 		# load sprites (pixely version)
-		sprites = pygame.transform.scale(pygame.image.load("images/sprites.gif"), [192, 224])
+		sprites = pygame.transform.scale(pygame.image.load("images/sprites.png"), [192, 224])
 		#screen.set_colorkey((0,138,104))
 
 		pygame.display.set_icon(sprites.subsurface(0, 0, 13*2, 13*2))
 
-		# load sounds
-		if play_sounds:
-			pygame.mixer.init(44100, -16, 1, 512)
-
-			sounds["start"] = pygame.mixer.Sound("sounds/gamestart.ogg")
-			sounds["end"] = pygame.mixer.Sound("sounds/gameover.ogg")
-			sounds["score"] = pygame.mixer.Sound("sounds/score.ogg")
-			sounds["bg"] = pygame.mixer.Sound("sounds/background.ogg")
-			sounds["fire"] = pygame.mixer.Sound("sounds/fire.ogg")
-			sounds["bonus"] = pygame.mixer.Sound("sounds/bonus.ogg")
-			sounds["explosion"] = pygame.mixer.Sound("sounds/explosion.ogg")
-			sounds["brick"] = pygame.mixer.Sound("sounds/brick.ogg")
-			sounds["steel"] = pygame.mixer.Sound("sounds/steel.ogg")
 
 		self.enemy_life_image = sprites.subsurface(81*2, 57*2, 7*2, 7*2)
 		self.player_life_image = sprites.subsurface(89*2, 56*2, 7*2, 8*2)
@@ -1353,11 +1316,7 @@ class Game():
 		labels.append(Label(bonus.rect.topleft, "500", 500))
 
 	def shieldPlayer(self, player, shield = True, duration = None):
-		""" Add/remove shield
-		player: player (not enemy)
-		shield: true/false
-		duration: in ms. if none, do not remove shield automatically
-		"""
+
 		player.shielded = shield
 		if shield:
 			player.timer_uuid_shield = gtimer.add(100, lambda :player.toggleShieldImage())
@@ -1369,12 +1328,6 @@ class Game():
 
 
 	def spawnEnemy(self):
-		""" Spawn new enemy if needed
-		Only add enemy if:
-			- there are at least one in queue
-			- map capacity hasn't exceeded its quota
-			- now isn't timefreeze
-		"""
 
 		global enemies
 
@@ -1725,6 +1678,9 @@ class Game():
 	def __get_key(self):
 		while True:
 			event = pygame.event.poll()
+			if event.type == pygame.QUIT:
+				sys.exit(0)
+
 			if event.type == pygame.KEYDOWN:
 				return event.key
 			else:
@@ -1733,7 +1689,7 @@ class Game():
 	def __display_box(self, message):
 		global screen
 		if len(message) != 0:
-			screen.blit(self.font.render(message, True, pygame.Color('white')), [165, 250])
+			screen.blit(self.font.render(message, True, pygame.Color('black')), [120, 180])
 		
 		pygame.display.flip()
 
@@ -1757,31 +1713,28 @@ class Game():
 			return ''.join(current_string)
 
 
+	def setBackground(self, image):
+		global screen
+		bg = pygame.image.load(image)
+		bg = pygame.transform.scale(bg, (screen.get_width(),screen.get_height()))
+		top = screen.get_height() - bg.get_height()
+		left = screen.get_width()/2 - bg.get_width()/2
+		screen.blit(bg,[0,0])
+
+
 	def drawIntroScreen(self, put_on_surface = True):
-		""" Draw intro (menu) screen
-		@param boolean put_on_surface If True, flip display after drawing
-		@return None
-		"""
 
 		global screen
 
-		screen.fill([20, 25, 65])
-
 		if pygame.font.get_init():
-
-			#hiscore = self.loadHiscore()
-
-			#screen.blit(self.font.render("HI- "+str(hiscore), True, pygame.Color('white')), [170, 35])
+			self.setBackground('images/background.jpg')
+			screen.fill([254, 100, 200], special_flags=pygame.BLEND_MULT)
 			self._playername = self.ask('Name')
 
 			if put_on_surface:
 				pygame.display.flip()
 
 	def animateIntroScreen(self):
-		""" Slide intro (menu) screen from bottom to top
-		If Enter key is pressed, finish animation immediately
-		@return None
-		"""
 
 		global screen
 
@@ -1791,76 +1744,9 @@ class Game():
 
 
 	def chunks(self, l, n):
-		""" Split text string in chunks of specified size
-		@param string l Input string
-		@param int n Size (number of characters) of each chunk
-		@return list
-		"""
+
 		return [l[i:i+n] for i in range(0, len(l), n)]
 
-	def writeInBricks(self, text, pos):
-		""" Write specified text in "brick font"
-		Only those letters are available that form words "Battle City" and "Game Over"
-		Both lowercase and uppercase are valid input, but output is always uppercase
-		Each letter consists of 7x7 bricks which is converted into 49 character long string
-		of 1's and 0's which in turn is then converted into hex to save some bytes
-		@return None
-		"""
-
-		global screen, sprites
-
-		bricks = sprites.subsurface(56*2, 64*2, 8*2, 8*2)
-		brick1 = bricks.subsurface((0, 0, 8, 8))
-		brick2 = bricks.subsurface((8, 0, 8, 8))
-		brick3 = bricks.subsurface((8, 8, 8, 8))
-		brick4 = bricks.subsurface((0, 8, 8, 8))
-
-		alphabet = {
-			"a" : "0071b63c7ff1e3",
-			"b" : "01fb1e3fd8f1fe",
-			"c" : "00799e0c18199e",
-			"e" : "01fb060f98307e",
-			"g" : "007d860cf8d99f",
-			"i" : "01f8c183060c7e",
-			"l" : "0183060c18307e",
-			"m" : "018fbffffaf1e3",
-			"o" : "00fb1e3c78f1be",
-			"r" : "01fb1e3cff3767",
-			"t" : "01f8c183060c18",
-			"v" : "018f1e3eef8e08",
-			"y" : "019b3667860c18"
-		}
-
-		abs_x, abs_y = pos
-
-		for letter in text.lower():
-
-			binstr = ""
-			for h in self.chunks(alphabet[letter], 2):
-				binstr += str(bin(int(h, 16)))[2:].rjust(8, "0")
-			binstr = binstr[7:]
-
-			x, y = 0, 0
-			letter_w = 0
-			surf_letter = pygame.Surface((56, 56))
-			for j, row in enumerate(self.chunks(binstr, 7)):
-				for i, bit in enumerate(row):
-					if bit == "1":
-						if i%2 == 0 and j%2 == 0:
-							surf_letter.blit(brick1, [x, y])
-						elif i%2 == 1 and j%2 == 0:
-							surf_letter.blit(brick2, [x, y])
-						elif i%2 == 1 and j%2 == 1:
-							surf_letter.blit(brick3, [x, y])
-						elif i%2 == 0 and j%2 == 1:
-							surf_letter.blit(brick4, [x, y])
-						if x > letter_w:
-							letter_w = x
-					x += 8
-				x = 0
-				y += 8
-			screen.blit(surf_letter, [abs_x, abs_y])
-			abs_x += letter_w + 16
 
 	def toggleEnemyFreeze(self, freeze = True):
 		""" Freeze/defreeze all enemies """
@@ -1873,10 +1759,7 @@ class Game():
 
 
 	def loadHiscore(self):
-		""" Load hiscore
-		Really primitive version =] If for some reason hiscore cannot be loaded, return 20000
-		@return int
-		"""
+
 		filename = ".hiscore"
 		if (not os.path.isfile(filename)):
 			return 20000
@@ -1891,9 +1774,7 @@ class Game():
 			return 20000
 
 	def saveHiscore(self, hiscore):
-		""" Save hiscore
-		@return boolean
-		"""
+
 		try:
 			f = open(".hiscore", "w")
 		except:
@@ -1935,7 +1816,7 @@ class Game():
 		self.level = Level(self.stage)
 		self.timefreeze = False
 
-		# set number of enemies by types (basic, fast, power, armor) according to level
+		# (basic, fast, power, armor)
 		levels_enemies = (
 			(18,2,0,0), (14,4,0,2), (14,4,0,2), (2,5,10,3), (8,5,5,2),
 			(9,2,7,2), (7,4,6,3), (7,4,7,2), (6,4,7,3), (12,2,4,2),
@@ -2097,7 +1978,7 @@ if __name__ == "__main__":
 	bonuses = []
 	labels = []
 
-	play_sounds = True
+	play_sounds = False
 	sounds = {}
 
 	game = Game()
